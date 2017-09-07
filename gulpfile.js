@@ -18,7 +18,7 @@ const lib = require('bower-files')({
     }
   }
 });
-
+const babelify = require("babelify");
 const buildProduction = utilities.env.production;
 const syllable = require('syllable');
 
@@ -30,10 +30,13 @@ return gulp.src(['./js/*-interface.js'])
 });
 
 gulp.task('jsBrowserify', ['concatInterface'], function() {
-return browserify({ entries: ['./tmp/allConcat.js'] })
-  .bundle()
-  .pipe(source('app.js'))
-  .pipe(gulp.dest('./build/js'));
+  return browserify({ entries: ['./tmp/allConcat.js']})
+    .transform(babelify.configure({
+      presets: ["es2015"]
+    }))
+    .bundle()
+    .pipe(source('app.js'))
+    .pipe(gulp.dest('./build/js'))
 });
 
 gulp.task("minifyScripts", ["jsBrowserify"], function(){
